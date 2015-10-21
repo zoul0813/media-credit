@@ -80,8 +80,15 @@ class MediaCreditPlugin {
    * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
    */
   public function get_media_credit($post = null) {
+    $options = get_option(MEDIA_CREDIT_OPTION);
     $post = get_post($post);
     $credit_meta = self::get_freeform_media_credit($post);
+
+    $include_default_credit = empty( $options['no_default_credit'] );
+    if(empty($credit_meta) && $include_default_credit) {
+      $credit_meta = self::get_wpuser_media_credit($post);
+    }
+
     return $credit_meta;
   }
 
@@ -649,19 +656,19 @@ class MediaCreditPlugin {
 
   public function add_media_credit_menu() {
     // Display settings for plugin on the built-in Media options page
-    add_settings_section(MEDIA_CREDIT_OPTION, __('Media Credit', 'media-credit'), 'media_credit_settings_section', 'media');
-    add_settings_field('preview', sprintf('<em>%s</em>', __('Preview', 'media-credit') ), 'media_credit_preview', 'media', MEDIA_CREDIT_OPTION);
-    add_settings_field('separator', __('Separator', 'media-credit'), 'media_credit_separator', 'media', MEDIA_CREDIT_OPTION);
-    add_settings_field('organization', __('Organization', 'media-credit'), 'media_credit_organization', 'media', MEDIA_CREDIT_OPTION);
-    add_settings_field('credit_at_end', __('Display credit after posts', 'media-credit'), 'media_credit_end_of_post', 'media', MEDIA_CREDIT_OPTION);
-    add_settings_field('no_default_credit', __('Do not display default credit', 'media-credit'), 'media_credit_no_default_credit', 'media', MEDIA_CREDIT_OPTION);
+    add_settings_section(MEDIA_CREDIT_OPTION, __('Media Credit', 'media-credit'), array($this, 'media_credit_settings_section'), 'media');
+    add_settings_field('preview', sprintf('<em>%s</em>', __('Preview', 'media-credit') ), array($this, 'media_credit_preview'), 'media', MEDIA_CREDIT_OPTION);
+    add_settings_field('separator', __('Separator', 'media-credit'), array($this, 'media_credit_separator'), 'media', MEDIA_CREDIT_OPTION);
+    add_settings_field('organization', __('Organization', 'media-credit'), array($this, 'media_credit_organization'), 'media', MEDIA_CREDIT_OPTION);
+    add_settings_field('credit_at_end', __('Display credit after posts', 'media-credit'), array($this, 'media_credit_end_of_post'), 'media', MEDIA_CREDIT_OPTION);
+    add_settings_field('no_default_credit', __('Do not display default credit', 'media-credit'), array($this, 'media_credit_no_default_credit'), 'media', MEDIA_CREDIT_OPTION);
     
     // Call register settings function
     add_action( 'admin_init', array($this, 'media_credit_init') );
   }
 
   public function media_credit_init() { // whitelist options
-    register_setting( 'media', MEDIA_CREDIT_OPTION, 'media_credit_options_validate' );
+    register_setting( 'media', MEDIA_CREDIT_OPTION, array($this, 'media_credit_options_validate') );
     if ( self::is_media_settings_page( ) )
       wp_enqueue_script( 'media-credit', MEDIA_CREDIT_URL . 'js/media-credit-preview.js', array('jquery'), MEDIA_CREDIT_VERSION, true);
 
