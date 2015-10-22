@@ -472,12 +472,11 @@ class MediaCreditPlugin {
       }
       return $m[0];
     }, $content, -1, $count);
-    if($count <= 0) return;
 
     $credit_unique = array_unique($credits);
-    
+
     /* If no images are left, don't display credit line */
-    if ( count($credit_unique) == 0 ) 
+    if ( $count <= 0 ) 
       return $content;
     
     $image_credit = _nx( 'Image courtesy of %1$s', 'Images courtesy of %2$s and %1$s', count($credit_unique), 
