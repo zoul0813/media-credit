@@ -477,7 +477,7 @@ class MediaCreditPlugin {
 
     /* If no images are left, don't display credit line */
     if ( $count <= 0 ) 
-      return $content;
+      return apply_filters( 'media_credit_at_end', $content, $content, $credit_unique, $count );
     
     $image_credit = _nx( 'Image courtesy of %1$s', 'Images courtesy of %2$s and %1$s', count($credit_unique), 
                '%1$s is always the position of the last credit, %2$s of the concatenated other credits', 'media-credit' );
