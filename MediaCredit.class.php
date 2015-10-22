@@ -272,7 +272,7 @@ class MediaCreditPlugin {
     } else {
       delete_post_meta($post['ID'], MEDIA_CREDIT_POSTMETA_KEY);
     }
-    update_media_credit_in_post($post, false, $freeform, $url);
+    self::update_media_credit_in_post($post, false, $freeform_name, $url);
     return $post;
   }
 
@@ -451,26 +451,33 @@ class MediaCreditPlugin {
   }
 
   public function add_media_credits_to_end( $content ) {
-    // Find the attachment_IDs of all media used in $content
-    preg_match_all( '/' . WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $matches );
-    $images = $matches[1];
-    
-    if ( count($images) == 0 )
-      return $content;
-
     /* Look at "no default credits" option */
     $options = get_option( MEDIA_CREDIT_OPTION );
     $include_default_credit = empty( $options['no_default_credit'] );
 
-    $credit_unique = array();
-    foreach ($images as $image) {
-      $credit = self::get_media_credit_html($image, $include_default_credit);
+    $self = $this;
+
+    $count = 0;
+    $credits = array();
+
+    // Find the attachment_IDs of all media used in $content
+    //preg_match_all( '/' . WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $matches );
+
+    $content = preg_replace_callback('/class=".*?wp-image-(\d+).*?"/', function($m) use(&$self, &$credits, $include_default_credit) {
+      echo "<pre>match: "; var_dump($m); echo "</pre>";
+      $credit = $self::get_media_credit_html($m[1], $include_default_credit);
       
       if (! empty( $credit ) ) {
-        $credit_unique[] = $credit;
+        $credits[] = $credit;
+        return $m[0] . ' photographer="' . $credit . '"';
       }
-    }
-    $credit_unique = array_unique($credit_unique);
+      return $m[0];
+    }, $content, -1, $count);
+    echo "<pre>count of replacements: "; var_dump($count); echo "</pre>";
+    if($count <= 0) return;
+
+    $credit_unique = array_unique($credits);
+    echo "<pre>credits_unique = "; var_dump($credits); echo "</pre>";
     
     /* If no images are left, don't display credit line */
     if ( count($credit_unique) == 0 ) 
@@ -494,7 +501,7 @@ class MediaCreditPlugin {
      * @param $content - the original content
      * @param $credit_unique - a unique array of media credits for the post.
      */
-    return apply_filters( 'media_credit_at_end', $content . '<div class="media-credit-end">' . $image_credit . '</div>', $content, $credit_unique );
+    return apply_filters( 'media_credit_at_end', $content . '<div class="media-credit-end">' . $image_credit . '</div>', $content, $credit_unique, $count );
   }
 
   public function media_credit_stylesheet() {
@@ -567,7 +574,7 @@ class MediaCreditPlugin {
           $img = $shortcode[5];
             
           $image_filename = wp_get_attachment_image_src($image_id);
-          $image_filename = get_image_filename_from_full_url($image_filename[0]);
+          $image_filename = self::get_image_filename_from_full_url($image_filename[0]);
           
           
           if (preg_match('/src=".*' . $image_filename . '/', $img) && preg_match('/wp-image-' . $image_id . '/', $img)) {
