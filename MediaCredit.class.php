@@ -466,7 +466,7 @@ class MediaCreditPlugin {
       $credit_html = $self::get_media_credit_html($m[1], $include_default_credit);
       $credit = $self::get_media_credit($m[1], $include_default_credit);
       
-      if (! empty( $credit ) ) {
+      if(!empty($credit)) {
         $credits[] = $credit_html;
         return $m[0] . ' media-credit="' . $credit . '"';
       }
@@ -488,8 +488,8 @@ class MediaCreditPlugin {
     $image_credit = sprintf( $image_credit, $last_credit, $other_credits);  
     
     // restore credit array for filter
-    $credit_unique[] = $last_credit;
-    
+    if(!empty($last_credit)) $credit_unique[] = $last_credit;
+
     /*
      * Filter hook to modify the end credits.
      * 
