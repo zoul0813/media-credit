@@ -469,7 +469,7 @@ class MediaCreditPlugin {
       
       if (! empty( $credit ) ) {
         $credits[] = $credit;
-        return $m[0] . ' photographer="' . $credit . '"';
+        return $m[0] . ' media-credit="' . $credit . '"';
       }
       return $m[0];
     }, $content, -1, $count);
