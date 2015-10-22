@@ -12,7 +12,6 @@ class MediaCreditPlugin {
 
     if ( is_admin() )
       add_action( 'admin_menu', array($this, 'add_media_credit_menu') );
-    add_action('wp_print_styles', array($this, 'media_credit_stylesheet' ));
     add_action( 'wp_ajax_media_credit_author_names', array($this, 'media_credit_author_names_ajax') );
     $options = get_option( MEDIA_CREDIT_OPTION );
     if ( !empty( $options['credit_at_end'] ) )
@@ -464,7 +463,6 @@ class MediaCreditPlugin {
     //preg_match_all( '/' . WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $matches );
 
     $content = preg_replace_callback('/class=".*?wp-image-(\d+).*?"/', function($m) use(&$self, &$credits, $include_default_credit) {
-      echo "<pre>match: "; var_dump($m); echo "</pre>";
       $credit = $self::get_media_credit_html($m[1], $include_default_credit);
       
       if (! empty( $credit ) ) {
@@ -473,11 +471,9 @@ class MediaCreditPlugin {
       }
       return $m[0];
     }, $content, -1, $count);
-    echo "<pre>count of replacements: "; var_dump($count); echo "</pre>";
     if($count <= 0) return;
 
     $credit_unique = array_unique($credits);
-    echo "<pre>credits_unique = "; var_dump($credits); echo "</pre>";
     
     /* If no images are left, don't display credit line */
     if ( count($credit_unique) == 0 ) 
@@ -503,16 +499,6 @@ class MediaCreditPlugin {
      */
     return apply_filters( 'media_credit_at_end', $content . '<div class="media-credit-end">' . $image_credit . '</div>', $content, $credit_unique, $count );
   }
-
-  public function media_credit_stylesheet() {
-    $options = get_option( MEDIA_CREDIT_OPTION );
-    if ( !empty( $options['credit_at_end'] ) ) // Do not display inline media credit if media credit is displayed at end of posts.
-      wp_enqueue_style( 'media-credit-end', MEDIA_CREDIT_URL . 'css/media-credit-end.css', array(), MEDIA_CREDIT_VERSION, 'all');
-    else
-      wp_enqueue_style( 'media-credit', MEDIA_CREDIT_URL . 'css/media-credit.css', array(), MEDIA_CREDIT_VERSION, 'all');
-  }
-
-
 
   //----- Add AJAX hook for Media Credit autocomplete box ----//
 

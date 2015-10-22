@@ -1,10 +1,12 @@
+This is a fork of the Media Credit plugin.  This fork adds additional functionality and may not be backwards compatible with the latest stable version of Media Credit.
+
 === Media Credit ===
-Contributors: sbressler, pputzer
+Contributors: sbressler, pputzer, zoul0813
 Donate link: http://www.scottbressler.com/blog/plugins/
 Tags: media, image, images, credit, byline, author, user
 Requires at least: 4.2
 Tested up to: 4.3.1
-Stable tag: 2.7.4
+Stable tag: 3.0.0
 
 Adds a "Credit" field when uploading media to posts and displays it under the images on your blog to properly credit the artist.
 
