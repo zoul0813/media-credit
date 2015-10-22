@@ -135,7 +135,7 @@ class MediaCreditPlugin {
     
     if ( $credit_meta != '' ) {
       if (!empty($credit_url)) {
-        return '<a href="' . esc_url($credit_url) . '">' . $credit_meta . '</a>';
+        return '<a href="' . esc_url($credit_url) . '" target="_blank">' . $credit_meta . '</a>';
       } else {
         return $credit_meta;
       }
@@ -463,10 +463,11 @@ class MediaCreditPlugin {
     //preg_match_all( '/' . WP_IMAGE_CLASS_NAME_PREFIX . '(\d+)/', $content, $matches );
 
     $content = preg_replace_callback('/class=".*?wp-image-(\d+).*?"/', function($m) use(&$self, &$credits, $include_default_credit) {
-      $credit = $self::get_media_credit_html($m[1], $include_default_credit);
+      $credit_html = $self::get_media_credit_html($m[1], $include_default_credit);
+      $credit = $self::get_media_credit($m[1], $include_default_credit);
       
       if (! empty( $credit ) ) {
-        $credits[] = $credit;
+        $credits[] = $credit_html;
         return $m[0] . ' media-credit="' . $credit . '"';
       }
       return $m[0];
