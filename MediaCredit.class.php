@@ -369,7 +369,7 @@ class MediaCreditPlugin {
   }
 
   public function ignore_media_credit_shortcode( $atts, $content = null ) {
-    return $content;
+    return do_shortcode($content);
   }
 
   public function add_media_credits_to_end( $content ) {
