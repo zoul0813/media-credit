@@ -16,10 +16,10 @@ class MediaCreditPlugin {
     $options = get_option( MEDIA_CREDIT_OPTION );
     if ( !empty( $options['credit_at_end'] ) )
       add_filter( 'the_content', array($this, 'add_media_credits_to_end'), 10, 1 );
-    add_shortcode('media-credit', array($this, 'media_credit_shortcode') );
+    add_shortcode('media-credit', array($this, 'ignore_media_credit_shortcode') );
     add_filter('image_send_to_editor', array($this, 'send_media_credit_to_editor_by_shortcode'), 10, 8);
-    add_shortcode('wp_caption', array($this, 'media_credit_caption_shortcode') );
-    add_shortcode('caption', array($this, 'media_credit_caption_shortcode') );
+    //add_shortcode('wp_caption', array($this, 'media_credit_caption_shortcode') );
+    //add_shortcode('caption', array($this, 'media_credit_caption_shortcode') );
     add_filter('attachment_fields_to_save', array($this, 'save_media_credit'), 10, 2);
     add_action( 'wp_ajax_media_credit_filter_content', array($this, 'media_credit_filter_content_ajax') );
 
@@ -332,23 +332,6 @@ class MediaCreditPlugin {
   }
 
   /**
-   * New way (in core consideration) to fix the caption shortcode parsing. Proof of concept at this point.
-   * 
-   * @param array $matches
-   * @param string $content
-   * @param string $regex
-   */
-  public function media_credit_img_caption_shortcode_content($matches, $content, $regex) {
-    $result = array();
-    
-    if ( preg_match( '#((?:\[media-credit[^\]]+\]\s*)(?:<a [^>]+>\s*)?<img [^>]+>(?:\s*</a>)?(?:\s*\[/media-credit\])?)(.*)#is', $content, $result ) )  
-      return $result;
-    else 
-      return $matches;
-  }
-  //add_filter('img_caption_shortcode_content', 'media_credit_img_caption_shortcode_content', 10, 3);
-
-  /**
    * Add media credit information to media using shortcode notation before sending to editor.
    */
   public function send_media_credit_to_editor_by_shortcode($html, $attachment_id, $caption, $title, $align, $url, $size, $alt = '' ) {
@@ -385,68 +368,8 @@ class MediaCreditPlugin {
     return apply_filters( 'media_add_credit_shortcode', $shcode, $html );
   }
 
-  /**
-   * Add shortcode for media credit. Allows for credit to be specified for media attached to a post
-   * by either specifying the ID of a WordPress user or with a raw string for the name assigned credit.
-   * If an ID is present, it will take precedence over a name.
-   * 
-   * Usage: [media-credit id=1 align="aligncenter" width="300"] or [media-credit name="Another User" align="aligncenter" width="300"]
-   */
-  public function media_credit_shortcode($atts, $content = null) {
-    // Allow plugins/themes to override the default media credit template.
-    $output = apply_filters('media_credit_shortcode', '', $atts, $content);
-    if ( $output != '' )
-      return $output;
-
-    $options = get_option( MEDIA_CREDIT_OPTION ); 
-    
-    if ( !empty( $options['credit_at_end'] ) )
-      return do_shortcode( $content );
-
-    extract(shortcode_atts(array(
-      'id' => -1,
-      'name' => '',
-      'link' => '',
-      'align' => 'alignnone',
-      'width' => '',
-    ), $atts, 'media-credit'));
-    
-    if ( $id !== -1 ) {
-      $url = empty($link) ? get_author_posts_url($id) : $link;          
-      $credit_wp_author = get_the_author_meta( 'display_name', $id );
-      $options = get_option(MEDIA_CREDIT_OPTION);   
-      $author_link = '<a href="' . esc_url($url) . '">' . $credit_wp_author . '</a>' . $options['separator'] . $options['organization'];
-    } else if ( !empty($link) ) {
-      $author_link = '<a href="' . esc_attr($link) . '">' . $name . '</a>';
-    } else {
-      $author_link = $name;
-    }
-    
-    $credit_width = (int) $width + current_theme_supports( 'html5', 'caption' ) ? 0 : 10;
-    
-    /**
-     * Filter the width of an image's credit/caption. 
-     * We could use a media-credit specific filter, but we don't to be more compatible
-     * with existing themes.
-     *
-     * By default, the caption is 10 pixels greater than the width of the image,
-     * to prevent post content from running up against a floated image.
-     *
-     * @see img_caption_shortcode()
-     *
-     * @param int    $caption_width Width of the caption in pixels. To remove this inline style,
-     *                              return zero.
-     * @param array  $atts          Attributes of the media-credit shortcode.
-     * @param string $content       The image element, possibly wrapped in a hyperlink.
-     */
-    $credit_width = apply_filters( 'img_caption_shortcode_width', $credit_width, $atts, $content );
-    
-    $style = '';
-    if ( $credit_width )
-      $style = ' style="width: ' . (int) $credit_width . 'px"';
-    
-    return '<div class="media-credit-container ' . esc_attr($align) . '"' . $style . '>'
-    . do_shortcode( $content ) . '<span class="media-credit">' . $author_link . '</span></div>';
+  public function ignore_media_credit_shortcode( $atts, $content = null ) {
+    return $content;
   }
 
   public function add_media_credits_to_end( $content ) {
@@ -671,20 +594,20 @@ class MediaCreditPlugin {
     }
 
     /* Also handle customizer */
-    add_action('customize_controls_enqueue_scripts', array($this, 'media_credit_customize_controls_enqueue_scripts') );
+    //add_action('customize_controls_enqueue_scripts', array($this, 'media_credit_customize_controls_enqueue_scripts') );
     
     // Don't bother doing this stuff if the current user lacks permissions as they'll never see the pages
     if ( !current_user_can('edit_posts') && !current_user_can('edit_pages') )
       return;
 
     if ( 'true' == get_user_option('rich_editing') ) {
-      add_filter( 'mce_external_plugins', array($this, 'media_credit_mce_external_plugins') );
-      add_filter( 'tiny_mce_plugins', array($this, 'media_credit_tiny_mce_plugins') );
-      add_filter( 'mce_css', array($this, 'media_credit_mce_css') );
+      //add_filter( 'mce_external_plugins', array($this, 'media_credit_mce_external_plugins') );
+      //add_filter( 'tiny_mce_plugins', array($this, 'media_credit_tiny_mce_plugins') );
+      //add_filter( 'mce_css', array($this, 'media_credit_mce_css') );
     }
     
     add_action( 'wp_enqueue_editor', array($this, 'media_credit_enqueue_editor'), 10, 1 );
-    add_action( 'print_media_templates', array($this, 'media_credit_image_properties_template') );
+    //add_action( 'print_media_templates', array($this, 'media_credit_image_properties_template') );
   }
 
   /* 

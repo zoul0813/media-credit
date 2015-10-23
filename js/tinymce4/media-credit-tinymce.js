@@ -799,7 +799,7 @@ tinymce.PluginManager.add( 'mediacredit', function( editor ) {
 		callback = function( imageData ) {
 			editor.focus();
 			editor.undoManager.transact( function() {
-				updateImage( img, imageData );
+				//updateImage( img, imageData );
 			} );
 			frame.detach();
 		};
