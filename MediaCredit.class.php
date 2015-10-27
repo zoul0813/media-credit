@@ -17,7 +17,7 @@ class MediaCreditPlugin {
     if ( !empty( $options['credit_at_end'] ) )
       add_filter( 'the_content', array($this, 'add_media_credits_to_end'), 10, 1 );
     add_shortcode('media-credit', array($this, 'ignore_media_credit_shortcode') );
-    add_filter('image_send_to_editor', array($this, 'send_media_credit_to_editor_by_shortcode'), 10, 8);
+    //add_filter('image_send_to_editor', array($this, 'send_media_credit_to_editor_by_shortcode'), 10, 8);
     //add_shortcode('wp_caption', array($this, 'media_credit_caption_shortcode') );
     //add_shortcode('caption', array($this, 'media_credit_caption_shortcode') );
     add_filter('attachment_fields_to_save', array($this, 'save_media_credit'), 10, 2);
