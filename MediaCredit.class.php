@@ -589,8 +589,8 @@ class MediaCreditPlugin {
       wp_enqueue_script( 'media-credit', MEDIA_CREDIT_URL . 'js/media-credit-preview.js', array('jquery'), MEDIA_CREDIT_VERSION, true);
 
     if ( self::is_media_edit_page( ) ) {
-      wp_enqueue_script('media-credit-autocomplete', MEDIA_CREDIT_URL . 'js/media-credit-autocomplete.js', array('jquery', 'jquery-ui-autocomplete'), MEDIA_CREDIT_VERSION, true);
-      wp_enqueue_script('media-credit-media-handling', MEDIA_CREDIT_URL . 'js/media-credit-media-handling.js', array('jquery'), MEDIA_CREDIT_VERSION, true);
+      wp_enqueue_script('media-credit-autocomplete', MEDIA_CREDIT_URL . 'js/media-credit-autocomplete.js', array('wp', 'jquery', 'jquery-ui-autocomplete'), MEDIA_CREDIT_VERSION, true);
+      wp_enqueue_script('media-credit-media-handling', MEDIA_CREDIT_URL . 'js/media-credit-media-handling.js', array('wp', 'jquery'), MEDIA_CREDIT_VERSION, true);
     }
 
     /* Also handle customizer */
