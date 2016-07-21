@@ -1,6 +1,6 @@
 <?php
 
-define('MEDIA_CREDIT_VERSION', '3.0.0');
+define('MEDIA_CREDIT_VERSION', '3.0.4');
 define('MEDIA_CREDIT_URL', plugins_url(plugin_basename(dirname(__FILE__)).'/'));
 define('MEDIA_CREDIT_POSTMETA_KEY', '_media_credit');
 define('MEDIA_CREDIT_URL_POSTMETA_KEY', '_media_credit_url');
