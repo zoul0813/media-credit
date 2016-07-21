@@ -126,7 +126,7 @@ class MediaCreditPlugin {
    * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
    * @param boolean $include_default_credit Optional flag to decide if default credits (owner) should be returned as well. Default is true.
    */
-  public function get_media_credit_html($post = null, $include_default_credit = true) {
+  public function get_media_credit_html($post = null, $include_default_credit = false) {
     $post = get_post($post);
     if (!is_object($post)) return '';
 
