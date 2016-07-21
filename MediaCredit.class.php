@@ -24,7 +24,21 @@ class MediaCreditPlugin {
     add_action( 'wp_ajax_media_credit_filter_content', array($this, 'media_credit_filter_content_ajax') );
 
     add_filter('get_media_credit', array($this, 'get_media_credit'));
+
+    add_filter('http_request_args', array($this, 'hide_from_updates'), 5, 2);
   }
+
+  public function hide_from_updates( $r, $url ) {
+    if ( 0 !== strpos( $url, 'http://api.wordpress.org/plugins/update-check' ) )
+      return $r; // Not a plugin update request. Bail immediately.
+
+    $plugins = unserialize( $r['body']['plugins'] );
+    unset( $plugins->plugins[ plugin_basename( __FILE__ ) ] );
+    unset( $plugins->active[ array_search( plugin_basename( __FILE__ ), $plugins->active ) ] );
+    $r['body']['plugins'] = serialize( $plugins );
+    return $r;
+  }
+
 
   /**
    * Load plugin textdomain.
@@ -126,7 +140,7 @@ class MediaCreditPlugin {
    * @param int|object $post Optional post ID or object of attachment. Default is global $post object.
    * @param boolean $include_default_credit Optional flag to decide if default credits (owner) should be returned as well. Default is true.
    */
-  public function get_media_credit_html($post = null, $include_default_credit = true) {
+  public function get_media_credit_html($post = null, $include_default_credit = false) {
     $post = get_post($post);
     if (!is_object($post)) return '';
 
