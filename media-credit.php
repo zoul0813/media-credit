@@ -3,7 +3,7 @@
 Plugin Name: Media Credit (Modified)
 Plugin URI: https://github.com/zoul0813/media-credit
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
-Version: 3.0.4
+Version: 3.0.5
 Author: Scott Bressler, modified by David Higgins
 Author URI: https://github.com/zoul0813/media-credit
 Text Domain: media-credit
