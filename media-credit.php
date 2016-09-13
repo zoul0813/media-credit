@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Media Credit
+Plugin Name: Media Credit (Modified)
 Plugin URI: https://github.com/zoul0813/media-credit
 Description: This plugin adds a "Credit" field to the media uploading and editing tool and inserts this credit when the images appear on your blog.
 Version: 3.0.4
