@@ -10,6 +10,16 @@ Text Domain: media-credit
 License: GPL2
 */
 
+
+// remove update notice for forked plugins
+function remove_update_notifications($value) {
+  if(isset($value) && is_object($value)) {
+    unset($value->response[plugin_basename(__FILE__)]);
+  }
+  return $value;
+}
+add_filter('site_transient_update_plugins', 'remove_update_notifications');
+
 require_once('constants.php');
 require_once('display.php');
 require_once('MediaCredit.class.php');
